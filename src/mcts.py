@@ -9,6 +9,7 @@ class State():
 
     def getPossibleActions(self):
         '''Returns an iterable of all actions which can be taken from this state'''
+
         possibleActions = ["up", "down", "left", "right"]
         self.avoidWalls(possibleActions)
         self.avoidBody(possibleActions)
@@ -16,6 +17,19 @@ class State():
 
     def avoidWalls(self, possibleActions: list):
         '''Avoid moves which run into walls'''
+
+        my_head = self.you["head"]
+        board_width = self.board["width"]
+        board_height = self.board["height"]
+
+        if board_width - my_head["x"] == 1:     # avoid right wall
+            possibleActions.remove("right")
+        if my_head["x"] == 0:                   # avoid left wall
+            possibleActions.remove("left")
+        if board_height - my_head["y"] == 1:    # avoid ceiling
+            possibleActions.remove("up")
+        if my_head["y"] == 0:                   # avoid floor
+            possibleActions.remove("down")
 
         return possibleActions
 
