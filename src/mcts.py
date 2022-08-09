@@ -1,5 +1,6 @@
 from mcts import mcts
 
+
 class State():
     def __init__(self, data: dict):
         self.game = data["game"]
@@ -13,12 +14,6 @@ class State():
         self.avoidBody(possibleActions)
         return possibleActions
 
-    def takeAction(self, action):
-        '''Returns the state which results from taking action (action)'''
-
-    def isTerminal(self):
-        '''Returns whether this state is a terminal state'''
-
     def avoidWalls(self, possibleActions: list):
         '''Avoid moves which run into walls'''
 
@@ -28,6 +23,15 @@ class State():
         '''Avoid moves which run into your body'''
 
         return possibleActions
+
+    def takeAction(self, action):
+        '''Returns the state which results from taking action (action)'''
+
+    def isTerminal(self):
+        '''Returns whether this state is a terminal state'''
+
+    def getReward(self):
+        '''Returns the reward for this state. Only needed for terminal states.'''
 
 
 def run(data: dict):
