@@ -1,5 +1,5 @@
 import random
-import mcts
+import my_mcts
 from typing import List, Dict
 
 """
@@ -44,7 +44,7 @@ def choose_move(data: dict) -> str:
 
     # # Uncomment the lines below to see what this data looks like in your output!
     # # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # # print(f"All board data this turn: {data}")
+    # print(f"All board data this turn: {data}")
     # # print(f"My Battlesnake this turn is: {my_snake}")
     # # print(f"My Battlesnakes head this turn is: {my_head}")
     # # print(f"My Battlesnakes body this turn is: {my_body}")
@@ -70,15 +70,15 @@ def choose_move(data: dict) -> str:
     # # Use information in `data` to seek out and find food.
     # # food = data['board']['food']
 
-    # # Choose a random direction from the remaining possible_moves to move in, and then return that move
+    # Choose a random direction from the remaining possible_moves to move in, and then return that move
     # move = random.choice(possible_moves)
-    # # TODO: Explore new strategies for picking a move that are better than random
+    # TODO: Explore new strategies for picking a move that are better than random
 
     # print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
 
     # return move
 
-    return mcts.run(data)
+    return my_mcts.run(data)
 
 
 def _avoid_my_neck(my_body: dict, possible_moves: List[str]) -> List[str]:

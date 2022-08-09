@@ -50,6 +50,7 @@ class State():
 
     def takeAction(self, action):
         '''Returns the state which results from taking action (action)'''
+        
 
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
