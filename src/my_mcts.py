@@ -1,5 +1,6 @@
 from copy import deepcopy
 from mcts import mcts
+import logging
 
 
 class State():
@@ -68,7 +69,7 @@ class State():
             newState.you["head"]["x"] -= 1
 
         newState.you["body"].pop()
-        newState.you["body"].push(newState.you["head"])
+        newState.you["body"].insert(0, newState.you["head"])
 
         # update health and food
         if newState.you["head"] in newState.board["food"]:
@@ -85,10 +86,14 @@ class State():
 
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
-        if self.getPossibleActions:
-            return False
-        else:
+
+        if len(self.getPossibleActions()) == 0:
             return True
+
+        if self.you["health"] == 0:
+            return True
+
+        return False
 
     def getReward(self):
         '''Returns the reward for this state. Only needed for terminal states.'''
@@ -97,6 +102,6 @@ class State():
 
 def run(data: dict):
     initialState = State(data)
-    searcher = mcts(timeLimit=data["game"]["timeout"])
+    searcher = mcts(timeLimit=data["game"]["timeout"] - 50)
     action = searcher.search(initialState=initialState)
     return action
