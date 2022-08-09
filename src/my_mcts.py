@@ -80,11 +80,19 @@ class State():
         # update turn
         newState.turn += 1
 
+        # return new state
+        return newState
+
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
+        if self.getPossibleActions:
+            return False
+        else:
+            return True
 
     def getReward(self):
         '''Returns the reward for this state. Only needed for terminal states.'''
+        return self.turn
 
 
 def run(data: dict):
