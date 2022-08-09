@@ -18,23 +18,33 @@ class State():
     def avoidWalls(self, possibleActions: list):
         '''Avoid moves which run into walls'''
 
-        my_head = self.you["head"]
-        board_width = self.board["width"]
-        board_height = self.board["height"]
-
-        if board_width - my_head["x"] == 1:     # avoid right wall
+        if self.board["width"] - self.you["head"]["x"] == 1:    # avoid right wall
             possibleActions.remove("right")
-        if my_head["x"] == 0:                   # avoid left wall
+        if self.you["head"]["x"] == 0:                          # avoid left wall
             possibleActions.remove("left")
-        if board_height - my_head["y"] == 1:    # avoid ceiling
+        if self.board["height"] - self.you["head"]["y"] == 1:   # avoid ceiling
             possibleActions.remove("up")
-        if my_head["y"] == 0:                   # avoid floor
+        if self.you["head"]["y"] == 0:                          # avoid floor
             possibleActions.remove("down")
 
         return possibleActions
 
     def avoidBody(self, possibleActions: list):
         '''Avoid moves which run into your body'''
+
+        left = {"x": self.you["head"]["x"] - 1, "y": self.you["head"]["y"]}
+        right = {"x": self.you["head"]["x"] + 1, "y": self.you["head"]["y"]}
+        up = {"x": self.you["head"]["x"], "y": self.you["head"]["y"] + 1}
+        down = {"x": self.you["head"]["x"], "y": self.you["head"]["y"] - 1}
+
+        if left in self.you["body"]:
+            possibleActions.remove("left")
+        if right in self.you["body"]:
+            possibleActions.remove("right")
+        if up in self.you["body"]:
+            possibleActions.remove("up")
+        if down in self.you["body"]:
+            possibleActions.remove("down")
 
         return possibleActions
 
