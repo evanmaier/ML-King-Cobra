@@ -1,3 +1,4 @@
+from copy import deepcopy
 from mcts import mcts
 
 
@@ -6,6 +7,7 @@ class State():
         self.game = data["game"]
         self.board = data["board"]
         self.you = data["you"]
+        self.turn = data["turn"]
 
     def getPossibleActions(self):
         '''Returns an iterable of all actions which can be taken from this state'''
@@ -50,7 +52,33 @@ class State():
 
     def takeAction(self, action):
         '''Returns the state which results from taking action (action)'''
-        
+
+        newState = deepcopy(self)
+        # update position
+        if action == "up":
+            newState.you["head"]["y"] += 1
+
+        elif action == "down":
+            newState.you["head"]["y"] -= 1
+
+        elif action == "right":
+            newState.you["head"]["x"] += 1
+
+        else:
+            newState.you["head"]["x"] -= 1
+
+        newState.you["body"].pop()
+        newState.you["body"].push(newState.you["head"])
+
+        # update health and food
+        if newState.you["head"] in newState.board["food"]:
+            newState.you["health"] = 100
+            newState.board["food"].remove(newState.you["head"])
+        else:
+            newState.you["health"] -= 1
+
+        # update turn
+        newState.turn += 1
 
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
