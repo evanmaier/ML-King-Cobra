@@ -1,4 +1,5 @@
 import random
+import mcts
 from typing import List, Dict
 
 """
@@ -36,45 +37,47 @@ def choose_move(data: dict) -> str:
     for each move of the game.
 
     """
-    my_snake = data["you"]      # A dictionary describing your snake's position on the board
-    my_head = my_snake["head"]  # A dictionary of coordinates like {"x": 0, "y": 0}
-    my_body = my_snake["body"]  # A list of coordinate dictionaries like [{"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}]
+    # my_snake = data["you"]      # A dictionary describing your snake's position on the board
+    # my_head = my_snake["head"]  # A dictionary of coordinates like {"x": 0, "y": 0}
+    # my_body = my_snake["body"]  # A list of coordinate dictionaries like [{"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}]
 
-    # Uncomment the lines below to see what this data looks like in your output!
-    # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # print(f"All board data this turn: {data}")
-    # print(f"My Battlesnake this turn is: {my_snake}")
-    # print(f"My Battlesnakes head this turn is: {my_head}")
-    # print(f"My Battlesnakes body this turn is: {my_body}")
+    # # Uncomment the lines below to see what this data looks like in your output!
+    # # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
+    # # print(f"All board data this turn: {data}")
+    # # print(f"My Battlesnake this turn is: {my_snake}")
+    # # print(f"My Battlesnakes head this turn is: {my_head}")
+    # # print(f"My Battlesnakes body this turn is: {my_body}")
 
-    possible_moves = ["up", "down", "left", "right"]
+    # possible_moves = ["up", "down", "left", "right"]
 
-    # Step 0: Don't allow your Battlesnake to move back on it's own neck.
-    possible_moves = _avoid_my_neck(my_body, possible_moves)
+    # # Step 0: Don't allow your Battlesnake to move back on it's own neck.
+    # possible_moves = _avoid_my_neck(my_body, possible_moves)
 
-    # TODO: Step 1 - Don't hit walls.
-    # Use information from `data` and `my_head` to not move beyond the game board.
-    # board = data['board']
-    # board_height = ?
-    # board_width = ?
+    # # TODO: Step 1 - Don't hit walls.
+    # # Use information from `data` and `my_head` to not move beyond the game board.
+    # # board = data['board']
+    # # board_height = ?
+    # # board_width = ?
 
-    # TODO: Step 2 - Don't hit yourself.
-    # Use information from `my_body` to avoid moves that would collide with yourself.
+    # # TODO: Step 2 - Don't hit yourself.
+    # # Use information from `my_body` to avoid moves that would collide with yourself.
 
-    # TODO: Step 3 - Don't collide with others.
-    # Use information from `data` to prevent your Battlesnake from colliding with others.
+    # # TODO: Step 3 - Don't collide with others.
+    # # Use information from `data` to prevent your Battlesnake from colliding with others.
 
-    # TODO: Step 4 - Find food.
-    # Use information in `data` to seek out and find food.
-    # food = data['board']['food']
+    # # TODO: Step 4 - Find food.
+    # # Use information in `data` to seek out and find food.
+    # # food = data['board']['food']
 
-    # Choose a random direction from the remaining possible_moves to move in, and then return that move
-    move = random.choice(possible_moves)
-    # TODO: Explore new strategies for picking a move that are better than random
+    # # Choose a random direction from the remaining possible_moves to move in, and then return that move
+    # move = random.choice(possible_moves)
+    # # TODO: Explore new strategies for picking a move that are better than random
 
-    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
+    # print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
 
-    return move
+    # return move
+
+    return mcts.run(data)
 
 
 def _avoid_my_neck(my_body: dict, possible_moves: List[str]) -> List[str]:
