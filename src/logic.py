@@ -9,6 +9,7 @@ We have started this for you, and included some logic to remove your Battlesnake
 from the list of possible moves!
 """
 
+
 def get_info() -> dict:
     """
     This controls your Battlesnake appearance and author permissions.
@@ -90,7 +91,8 @@ def _avoid_my_neck(my_body: dict, possible_moves: List[str]) -> List[str]:
     return: The list of remaining possible_moves, with the 'neck' direction removed
     """
     my_head = my_body[0]  # The first body coordinate is always the head
-    my_neck = my_body[1]  # The segment of body right after the head is the 'neck'
+    # The segment of body right after the head is the 'neck'
+    my_neck = my_body[1]
 
     if my_neck["x"] < my_head["x"]:  # my neck is left of my head
         possible_moves.remove("left")
