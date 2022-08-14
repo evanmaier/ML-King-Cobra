@@ -6,10 +6,13 @@ import logging
 
 class State():
     def __init__(self, data: dict):
-        self.game = data["game"]
-        self.board = data["board"]
-        self.you = data["you"]
-        self.turn = data["turn"]
+        self.snake = data['you']['body']
+        self.head = data['you']['head']
+        self.health = data['you']['health']
+        self.food = data['board']['food']
+        self.turn = data['turn']
+        self.board = {'width': data['board']['width'],
+                      'height': data['board']['height']}
         self.currentPlayer = 1
 
     def getCurrentPlayer(self):
@@ -19,7 +22,7 @@ class State():
     def getPossibleActions(self):
         '''Returns an iterable of all actions which can be taken from this state'''
 
-        possibleActions = ["up", "down", "left", "right"]
+        possibleActions = ['up', 'down', 'left', 'right']
         self.avoidWalls(possibleActions)
         self.avoidBody(possibleActions)
         return possibleActions
@@ -27,68 +30,78 @@ class State():
     def avoidWalls(self, possibleActions: list):
         '''Avoid moves which run into walls'''
 
-        if self.board["width"] - self.you["head"]["x"] == 1:    # avoid right wall
-            possibleActions.remove("right")
-        if self.you["head"]["x"] == 0:                          # avoid left wall
-            possibleActions.remove("left")
-        if self.board["height"] - self.you["head"]["y"] == 1:   # avoid ceiling
-            possibleActions.remove("up")
-        if self.you["head"]["y"] == 0:                          # avoid floor
-            possibleActions.remove("down")
+        if self.board['width'] - self.head['x'] == 1:    # avoid right wall
+            possibleActions.remove('right')
+        if self.head['x'] == 0:                          # avoid left wall
+            possibleActions.remove('left')
+        if self.board['height'] - self.head['y'] == 1:   # avoid ceiling
+            possibleActions.remove('up')
+        if self.head['y'] == 0:                          # avoid floor
+            possibleActions.remove('down')
 
         return possibleActions
 
     def avoidBody(self, possibleActions: list):
         '''Avoid moves which run into your body'''
 
-        left = {"x": self.you["head"]["x"] - 1, "y": self.you["head"]["y"]}
-        right = {"x": self.you["head"]["x"] + 1, "y": self.you["head"]["y"]}
-        up = {"x": self.you["head"]["x"], "y": self.you["head"]["y"] + 1}
-        down = {"x": self.you["head"]["x"], "y": self.you["head"]["y"] - 1}
+        left = {'x': self.head['x'] - 1, 'y': self.head['y']}
+        right = {'x': self.head['x'] + 1, 'y': self.head['y']}
+        up = {'x': self.head['x'], 'y': self.head['y'] + 1}
+        down = {'x': self.head['x'], 'y': self.head['y'] - 1}
 
-        if left in self.you["body"]:
-            possibleActions.remove("left")
-        if right in self.you["body"]:
-            possibleActions.remove("right")
-        if up in self.you["body"]:
-            possibleActions.remove("up")
-        if down in self.you["body"]:
-            possibleActions.remove("down")
+        snakeNoTail = deepcopy(self.snake)
+        snakeNoTail.pop()
+
+        if left in snakeNoTail:
+            possibleActions.remove('left')
+        if right in snakeNoTail:
+            possibleActions.remove('right')
+        if up in snakeNoTail:
+            possibleActions.remove('up')
+        if down in snakeNoTail:
+            possibleActions.remove('down')
 
         return possibleActions
 
     def takeAction(self, action):
         '''Returns the state which results from taking action (action)'''
 
-        newState = deepcopy(self)
-        # update position
-        if action == "up":
-            newState.you["head"]["y"] += 1
+        nextState = deepcopy(self)
+        # apply action
+        if action == 'up':
+            nextState.head['y'] += 1
 
-        elif action == "down":
-            newState.you["head"]["y"] -= 1
+        elif action == 'down':
+            nextState.head['y'] -= 1
 
-        elif action == "right":
-            newState.you["head"]["x"] += 1
+        elif action == 'right':
+            nextState.head['x'] += 1
+
+        elif action == 'left':
+            nextState.head['x'] -= 1
 
         else:
-            newState.you["head"]["x"] -= 1
+            raise Exception("Invalid Action!")
 
-        newState.you["body"].insert(0, newState.you["head"])  # move head
+        # move head
+        nextState.snake.insert(0, nextState.head)
 
-        # update health and food
-        if newState.you["head"] in newState.board["food"]:
-            newState.you["health"] = 100
-            newState.board["food"].remove(newState.you["head"])
+        # move tail
+        nextState.snake.pop()
+
+        # eat food
+        if nextState.head in nextState.food:
+            nextState.health = 100
+            nextState.food.remove(nextState.head)
+            nextState.snake.insert(len(nextState.snake), nextState.snake[-1])
         else:
-            newState.you["health"] -= 1
-            newState.you["body"].pop()  # only move tail if not eating
+            nextState.health -= 1
 
         # update turn
-        newState.turn += 1
+        nextState.turn += 1
 
         # return new state
-        return newState
+        return nextState
 
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
@@ -96,17 +109,17 @@ class State():
         if not self.getPossibleActions():
             return True
 
-        if self.you["health"] == 0:
+        if self.health == 0:
             return True
 
         return False
 
     def getReward(self):
-        '''Returns the reward for this state. Only needed for terminal states.'''
+        '''Returns the reward for this state'''
         if self.isTerminal():
-            return float("-inf")
+            return self.turn
         else:
-            return 1
+            return 1000000
 
 
 def run(data: dict, debug=False):
@@ -117,12 +130,12 @@ def run(data: dict, debug=False):
             action = searcher.search(
                 initialState=initialState, needDetails=True)
         except IndexError:
-            print("No moves available")
-            return "up"
+            print('No moves available')
+            return 'up'
     else:
         try:
             action = searcher.search(initialState=initialState)
         except IndexError:
-            print("No moves available")
-            return "up"
+            print('No moves available')
+            return 'up'
     return action

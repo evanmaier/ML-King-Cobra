@@ -6,15 +6,13 @@ import random
 
 
 def randomPolicy(state):
-    depth = 10
-    while not state.isTerminal() and depth > 0:
+    while not state.isTerminal():
         try:
             action = random.choice(state.getPossibleActions())
         except IndexError:
             raise Exception(
                 "Non-terminal state has no possible actions: " + str(state))
         state = state.takeAction(action)
-        depth -= 1
     return state.getReward()
 
 
