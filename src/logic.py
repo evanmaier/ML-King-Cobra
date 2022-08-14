@@ -1,5 +1,5 @@
 import random
-import my_mcts
+import snakeMcts
 from typing import List, Dict
 
 """
@@ -38,13 +38,15 @@ def choose_move(data: dict) -> str:
     for each move of the game.
 
     """
+    # debug
+    move = snakeMcts.run(data, debug=True)
+    try:
+        print("turn: {} action: {} reward: {}".format(
+            data['turn'], move['action'], move['expectedReward']))
+        return move["action"]
+    except:
+        print("dead")
+        return "up"
 
-    # # Uncomment the lines below to see what this data looks like in your output!
-    # # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # print(f"All board data this turn: {data}")
-    # # print(f"My Battlesnake this turn is: {my_snake}")
-    # # print(f"My Battlesnakes head this turn is: {my_head}")
-    # # print(f"My Battlesnakes body this turn is: {my_body}")
-
-    # return move
-    return my_mcts.run(data)
+    # normal
+    # return snakeMcts.run(data)

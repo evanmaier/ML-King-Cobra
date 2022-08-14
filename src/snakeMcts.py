@@ -1,4 +1,5 @@
 from copy import deepcopy
+from inspect import istraceback
 from mcts import mcts
 import logging
 
@@ -9,6 +10,11 @@ class State():
         self.board = data["board"]
         self.you = data["you"]
         self.turn = data["turn"]
+        self.currentPlayer = 1
+
+    def getCurrentPlayer(self):
+        '''Return current player value'''
+        return self.currentPlayer
 
     def getPossibleActions(self):
         '''Returns an iterable of all actions which can be taken from this state'''
@@ -68,8 +74,7 @@ class State():
         else:
             newState.you["head"]["x"] -= 1
 
-        newState.you["body"].pop()
-        newState.you["body"].insert(0, newState.you["head"])
+        newState.you["body"].insert(0, newState.you["head"])  # move head
 
         # update health and food
         if newState.you["head"] in newState.board["food"]:
@@ -77,6 +82,7 @@ class State():
             newState.board["food"].remove(newState.you["head"])
         else:
             newState.you["health"] -= 1
+            newState.you["body"].pop()  # only move tail if not eating
 
         # update turn
         newState.turn += 1
@@ -87,7 +93,7 @@ class State():
     def isTerminal(self):
         '''Returns whether this state is a terminal state'''
 
-        if len(self.getPossibleActions()) == 0:
+        if not self.getPossibleActions():
             return True
 
         if self.you["health"] == 0:
@@ -97,11 +103,26 @@ class State():
 
     def getReward(self):
         '''Returns the reward for this state. Only needed for terminal states.'''
-        return self.turn
+        if self.isTerminal():
+            return float("-inf")
+        else:
+            return 1
 
 
-def run(data: dict):
+def run(data: dict, debug=False):
     initialState = State(data)
-    searcher = mcts(timeLimit=data["game"]["timeout"] - 50)
-    action = searcher.search(initialState=initialState)
+    searcher = mcts(timeLimit=250)
+    if debug:
+        try:
+            action = searcher.search(
+                initialState=initialState, needDetails=True)
+        except IndexError:
+            print("No moves available")
+            return "up"
+    else:
+        try:
+            action = searcher.search(initialState=initialState)
+        except IndexError:
+            print("No moves available")
+            return "up"
     return action
